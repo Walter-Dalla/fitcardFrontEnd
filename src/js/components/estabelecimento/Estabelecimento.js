@@ -8,6 +8,8 @@ import Nav from "../../paginas/nav.js";
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
 
+import '../../../css/estabelecimento/estabelecimento.css'
+
 import UpdateEstabelecimentoModal from './modal/UpdateEstabelecimentoModal'
 import AddEstabelecimentoModal from './modal/AddEstabelecimentoModal';
 import DeleteEstabelecimentoModal from './modal/DeleteEstabelecimentoModal'
@@ -329,14 +331,14 @@ export default class Estabelecimento extends Component{
             <Head page="Estabelecimento"/>
             <body>
                 <Nav tela="estabelecimento"/>
-                <section className="contact-page">
+                <section className="estabelecimento">
                     <div className="container">
                         <div className="text-center">
                             <h2>Estabelecimentos cadastrados</h2>
                             
                         </div>
                         <div className="row contact-wrap">
-                            <div className="col-6">
+                            <div className="col-12">
                                 <div className="tabela">
                                     {
                                         this.state.table

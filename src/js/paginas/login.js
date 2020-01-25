@@ -5,6 +5,8 @@ import Nav from "./nav.js";
 import { browserHistory } from 'react-router/lib';
 import CadastroModel from '../components/modal/CadastrarModal'
 
+import '../../css/login/login.css'
+
 export default class Login extends Component{
 
     constructor(props){
@@ -87,9 +89,9 @@ export default class Login extends Component{
             <html lang="en">
             <Head/>
             <body>
-            <Nav tela={this.props.tela}/>
+            <Nav tela="Login"/>
 
-                <section className="contact-page">
+                <section className="login">
                     <div className="container">
                     <div className="text-center">
                         <h2>Login</h2>

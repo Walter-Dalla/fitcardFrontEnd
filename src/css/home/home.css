@@ -1,3 +1,7 @@
+.home{
+	font-size: 20px;
+}
+
 .sobre {
 	padding:80px 0 80px 0;
 	background:#fff;
@@ -42,4 +46,8 @@
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 1px;
+ }
+
+ p{
+	 font-size: 15px;
  }

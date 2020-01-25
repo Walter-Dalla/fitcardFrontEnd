@@ -113,7 +113,7 @@ export default class AddEstabelecimentoModal extends Component{
                     </Modal.Header>
                     <Modal.Body>
                         <div className="row contact-wrap">
-                            <div className="col-md-6 col-md-offset-3">
+                            <div className="col-md-8 col-md-offset-2">
                             <div id="errormessage">
                             </div>
                                 <form role="form" className="contactForm">

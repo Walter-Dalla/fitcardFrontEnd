@@ -1,0 +1,23 @@
+.equipe{
+    margin-bottom: 100px;
+}
+
+.equipe h1{
+    text-align: center;
+}
+.equipe p{
+    font-size: 18px;
+}
+
+.equipe img{
+    width: 100px;
+    height: 100px;
+    
+}
+
+.apresentacao {    
+    width: 100px;
+    height: 100px;
+    
+    margin-top: 30px;
+}

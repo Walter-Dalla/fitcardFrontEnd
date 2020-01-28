@@ -95,7 +95,7 @@ export default class Login extends Component{
                     <div className="container">
                     <div className="text-center">
                         <h2>Login</h2>
-                        <p onClick={this.openModalCadastar}>Cadastre-se</p>
+                        <p className="cadastrar" onClick={this.openModalCadastar}>Cadastre-se</p>
                     </div>
                     <div className="row contact-wrap">
                         <div className="col-md-6 col-md-offset-3">

@@ -1,0 +1,29 @@
+{
+  "files": {
+    "main.css": "/fitcardFrontEnd/static/css/main.df0c7d54.chunk.css",
+    "main.js": "/fitcardFrontEnd/static/js/main.f199ed47.chunk.js",
+    "main.js.map": "/fitcardFrontEnd/static/js/main.f199ed47.chunk.js.map",
+    "runtime-main.js": "/fitcardFrontEnd/static/js/runtime-main.17bb945c.js",
+    "runtime-main.js.map": "/fitcardFrontEnd/static/js/runtime-main.17bb945c.js.map",
+    "static/css/2.11f871ab.chunk.css": "/fitcardFrontEnd/static/css/2.11f871ab.chunk.css",
+    "static/js/2.f92ec2d8.chunk.js": "/fitcardFrontEnd/static/js/2.f92ec2d8.chunk.js",
+    "static/js/2.f92ec2d8.chunk.js.map": "/fitcardFrontEnd/static/js/2.f92ec2d8.chunk.js.map",
+    "index.html": "/fitcardFrontEnd/index.html",
+    "precache-manifest.898444c86751713573529d2218d9eeeb.js": "/fitcardFrontEnd/precache-manifest.898444c86751713573529d2218d9eeeb.js",
+    "service-worker.js": "/fitcardFrontEnd/service-worker.js",
+    "static/css/2.11f871ab.chunk.css.map": "/fitcardFrontEnd/static/css/2.11f871ab.chunk.css.map",
+    "static/css/main.df0c7d54.chunk.css.map": "/fitcardFrontEnd/static/css/main.df0c7d54.chunk.css.map",
+    "static/js/2.f92ec2d8.chunk.js.LICENSE": "/fitcardFrontEnd/static/js/2.f92ec2d8.chunk.js.LICENSE",
+    "static/media/1.jpg": "/fitcardFrontEnd/static/media/1.4a9c58af.jpg",
+    "static/media/7.jpg": "/fitcardFrontEnd/static/media/7.0a115b73.jpg",
+    "static/media/font-awesome.min.css": "/fitcardFrontEnd/static/media/fontawesome-webfont.dcb26c72.ttf",
+    "static/media/bootstrap.min.css": "/fitcardFrontEnd/static/media/glyphicons-halflings-regular.ff423a42.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.17bb945c.js",
+    "static/css/2.11f871ab.chunk.css",
+    "static/js/2.f92ec2d8.chunk.js",
+    "static/css/main.df0c7d54.chunk.css",
+    "static/js/main.f199ed47.chunk.js"
+  ]
+}

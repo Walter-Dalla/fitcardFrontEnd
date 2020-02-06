@@ -11,7 +11,7 @@ import Equipe from './js/paginas/equipe.js';
 import Login from './js/paginas/login.js';
 import Estabelecimento from './js/components/estabelecimento/Estabelecimento'
 
-let url = "http://localhost:8080";
+let url = "http://localhost:5000";
 
 ReactDOM.render(
 

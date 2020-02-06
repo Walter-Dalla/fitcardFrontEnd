@@ -1,9 +1,13 @@
-import React, { Component }  from 'react';
+import React, { Component, useState }  from 'react';
 
 import {booleanToAtivoInativo, BtnAtivarOuDesativar, inverterBotao} from '../../utils'
+import {fetchForFitcardProjectBackend, getFiltro} from '../../utils/fetchUtils'
+import { getCategoriaBackend } from '../../utils/categoriaUtils'
 
 import Head from "../../paginas/head.js";
 import Nav from "../../paginas/nav.js";
+
+import { renderTabelaEstabelecimento } from './utils/TabelaUtils'
 
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
@@ -34,295 +38,20 @@ export default class Estabelecimento extends Component{
                 desabilitado:true
             }
         }
-        this.onMount = this.onMount.bind(this);
+        this.getEstabelecimentosBackend = this.getEstabelecimentosBackend.bind(this);
         this.renderTabelaEstabelecimento = this.renderTabelaEstabelecimento.bind(this);
         this.openCreateModal = this.openCreateModal.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.getModalInfo = this.getModalInfo.bind(this);
         this.botaoAtivarDesativar = this.botaoAtivarDesativar.bind(this);
         this.atualizarTabela = this.atualizarTabela.bind(this);
-        this.categorias = this.categorias.bind(this);
+        this.getCategoriasFromBackend = this.getCategoriasFromBackend.bind(this);
         this.getCategoria = this.getCategoria.bind(this);
+        this.setEstabelecimentoSelecionado = this.setEstabelecimentoSelecionado.bind(this)
         this.filderOnChange = this.filderOnChange.bind(this);
-    }
-
-    async categorias(){
-        let url = this.props.url + '/categoria';
-        
-        const payload = {
-            method: 'GET',
-            headers: new Headers({
-                'Content-type':'application/json',
-                'Token':localStorage.getItem('auth-token')
-            }),
-        };
-        
-        let response = await fetch(url, payload)
-        try {
-            if(response.ok)
-            this.setState({
-                categorias: await response.json()
-            })
-            else
-                throw new Error('Erro ocorreu');
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    getCategoria(){
-        return this.state.categorias
-    }
-
-    botaoAtivarDesativar(negar){
-        let nomeBotaoAtivarDesativar = ''
-        if(this.state.modalInfo !== undefined){
-            let status = this.state.modalInfo.status
-            nomeBotaoAtivarDesativar = BtnAtivarOuDesativar(status, negar);
-        }
-
-        this.setState({
-            botaoAtivarDesativar:{
-                nomeBotaoAtivarDesativar,
-                desabilitado:false
-            }
-        }) 
-    }
-
-    getModalInfo(){
-        let estabelecimentoProps = Object.assign({},this.state.modalInfo);
-        if(estabelecimentoProps.categoria !== undefined && estabelecimentoProps.categoria !== null)
-            estabelecimentoProps.categoria = estabelecimentoProps.categoria.categoria;
-        return estabelecimentoProps;
-    }
-
-    async onMount(){
-        const filtros = this.state.filter;
-        const url = this.props.url + '/estabelecimento';
-        let querry = '?erro=null'
-        
-        const payload = {
-            method: 'GET',
-            headers: new Headers({
-                'Content-type':'application/json',
-                'Token':localStorage.getItem('auth-token')
-            }),
-        };
-        
-        if(filtros !== null && filtros !== undefined){
-            const filtrosKey = Object.keys(filtros);
-            filtrosKey.forEach(filtroKey =>{
-                let value = filtros[filtroKey];
-                if(value != '')
-                   querry += "&" + filtroKey + "=" + value
-            })
-
-        }
-
-        const response = await fetch(url + querry, payload)
-        let responseJson;
-        try {
-            if(response.ok){
-                responseJson = await response.json();
-            }
-            else
-                throw new Error('Erro ocorreu');
-        } catch (err) {
-            console.log(err);
-        }
-        return responseJson;
-    }
-
-    handleClose(){
-        this.setState({
-            modalAddEstabelecimentoShow:false,
-            modalUpdateEstabelecimentoShow:false,
-            deleteEstabelecimentoModal:false,
-            statusEstabelecimentoModal:false,
-        });
-        setTimeout(()=>{
-            this.atualizarTabela()
-            
-            const modalInfo = this.state.modalInfo;
-
-            let nomeBtn = this.state.botaoAtivarDesativar;
-            nomeBtn.nomeBotaoAtivarDesativar = inverterBotao(nomeBtn.nomeBotaoAtivarDesativar)
-
-            this.setState({
-                botaoAtivarDesativar:{
-                    ...nomeBtn,
-                    nomeBotaoAtivarDesativar:nomeBtn.nomeBotaoAtivarDesativar,
-                },
-                modalInfo:{
-                    ...modalInfo,
-                    status:nomeBtn.nomeBotaoAtivarDesativar
-                }
-            })
-        }, 1000)
-    }
-
-    openCreateModal(modalType){
-        console.log(modalType)
-        switch(modalType){
-            case 'create':
-                this.setState({
-                    modalAddEstabelecimentoShow:true
-                }); 
-                break;
-
-            case 'update':
-                this.setState({
-                    modalUpdateEstabelecimentoShow:true
-                }); 
-                break;
-            
-            case 'delete':
-                this.setState({
-                    deleteEstabelecimentoModal:true
-                }); 
-                break;
-
-            case 'status':
-                this.setState({
-                    statusEstabelecimentoModal:true
-                }); 
-                break;
-
-        }
-    }
-
-    componentDidMount(){
-        this.atualizarTabela();
-        this.categorias();
-    }
-
-    async atualizarTabela(){
-        this.setState({
-            modalInfo:{
-
-            },botaoAtivarDesativar:{
-                desabilitado:true
-            }
-        }) 
-        let sla = await this.onMount()
-        this.renderTabelaEstabelecimento(sla)
-    }
-
-    filderOnChange(event){
-        this.setState({
-            filter:{
-                [event.target.id]:event.target.value
-            }
-        })
-    }
-
-    async renderTabelaEstabelecimento(data){
-        if(data === undefined)
-            data = this.state.estabelecimentos
-        let columns = [];
-        let keys = [
-            "cnpj",
-            "razaoSocial",
-            "nomeFantasia",
-            "email",
-            "endereco",
-            "cidade",
-            "estado",
-            "cep",
-            "telefone",
-            "dataCadastro",
-            "dataAlteracao",
-            "categoria",
-            "status",
-            "conta",
-            "agencia"
-        ]
-        if(data !== undefined && data !== null && data[0] !== undefined && data[0] !== null){
-            let keys = Object.keys(data[0])
-        }
-            let bonusAccessor = '';
-            let enumEstabelecimento = {
-                cnpj:"CNPJ",
-                razaoSocial:"Razão social",
-                nomeFantasia:"Nome Fantasia",
-                email:"Email",
-                endereco:"Endereço",
-                cidade:"Cidade",
-                estado:"Estado",
-                telefone:"Telefone",
-                dataCadastro:"Data Cadastro",
-                categoria:"Categoria",
-                status:"Status",
-                conta:"Conta",
-                agencia:"Agencia"
-            };
-                
-            for (let count = 0; count < keys.length ; count++) {
-                let header = keys[count];
-                
-                bonusAccessor = keys[count] !== "categoria"? '':'.categoria';
-
-                if(enumEstabelecimento[keys[count]] !== undefined)
-                    header = enumEstabelecimento[keys[count]]
-                
-                    header = 
-                    <>
-                        {header}<br/>
-                        <input className="filterInput" onClick={event => {
-                            event.stopPropagation()
-                        }}id={keys[count]} onBlur={this.atualizarTabela} onChange={this.filderOnChange}>
-
-                        </input>
-                    </>
-                columns.push({
-                    Header: header, 
-                    accessor: keys[count] + bonusAccessor
-                });
-            }
-
-            this.setState({
-                estabelecimentos:data
-            })
-            
-            data.forEach(estabelecimento => {
-                estabelecimento.status = booleanToAtivoInativo(estabelecimento.status)
-            });
-            
-        this.setState({
-            table: <ReactTable
-            defaultPageSize="5"
-            defaultPageSize="10"
-            data={data}
-            columns={columns}
-            className="-striped -highlight"
-        getTrProps={(state, rowInfo) => {
-            if (rowInfo !== undefined) {
-                let cnpj = this.state.modalInfo.cnpj;
-                let color = '';
-                
-                if(rowInfo.original !== undefined)
-                    color = rowInfo.original.cnpj === cnpj ? '#9999ff' : ''
-                    
-                    return {
-                        onClick: async (e) => {
-                            let estabelecimento = rowInfo.original;
-                            
-                            await this.setState({
-                                modalInfo:estabelecimento
-                            }) 
-                            this.renderTabelaEstabelecimento();
-                            this.botaoAtivarDesativar();
-                        },
-                        style:{
-                            background: color
-                        }
-                    }
-                }else
-                return {}
-                }
-            }
-            />
-        });
+        this.setBotaoDeStatus = this.setBotaoDeStatus.bind(this);
+        this.setHabilitarDesabilitarBotaoDeStatus = this.setHabilitarDesabilitarBotaoDeStatus.bind(this);
+        this.setCategorias = this.setCategorias.bind(this);
     }
 
     render(){
@@ -388,5 +117,181 @@ export default class Estabelecimento extends Component{
             </body>
         </html>
         );
+    }
+
+    botaoAtivarDesativar(negar){
+        let nomeBotaoAtivarDesativar = ''
+
+        if(this.state.modalInfo !== undefined){
+            let status = this.state.modalInfo.status
+            nomeBotaoAtivarDesativar = BtnAtivarOuDesativar(status, negar);
+        }
+
+        this.setState({
+            botaoAtivarDesativar:{
+                nomeBotaoAtivarDesativar,
+                desabilitado:false
+            }
+        }) 
+    }
+
+    openCreateModal(modalType){
+        
+        switch(modalType){
+            case 'create':
+                this.setState({
+                    modalAddEstabelecimentoShow:true
+                }); 
+                break;
+
+            case 'update':
+                this.setState({
+                    modalUpdateEstabelecimentoShow:true
+                }); 
+                break;
+                
+            case 'delete':
+                this.setState({
+                    deleteEstabelecimentoModal:true
+                }); 
+                break;
+                
+            case 'status':
+                this.setState({
+                    statusEstabelecimentoModal:true
+                }); 
+                break;
+                
+        }
+    }
+
+    async componentDidMount(){
+        this.atualizarTabela();
+        this.setCategorias(await getCategoriaBackend(this.props.url))
+    }
+
+    async atualizarTabela(){
+        let data = await this.getEstabelecimentosBackend()
+        this.setHabilitarDesabilitarBotaoDeStatus(true);
+        this.setEstabelecimentoSelecionado({})
+        this.setArrayEstabelecimentos(data)
+        
+        this.renderTabelaEstabelecimento(data)
+    }
+
+    async renderTabelaEstabelecimento(data){
+        
+        if(data === undefined)
+            data = this.state.estabelecimentos;
+        
+        this.setState({
+            table:
+            await renderTabelaEstabelecimento(
+                data, this.renderTabelaEstabelecimento, this.botaoAtivarDesativar, this.atualizarTabela,
+                this.filderOnChange, this.getModalInfo(), this.setEstabelecimentoSelecionado)
+        });
+    }
+
+    //Handle change
+
+    filderOnChange(event){
+        const filtro = this.state.filter;
+        this.setState({
+            filter:{
+                ...filtro,
+                [event.target.id]:event.target.value
+            }
+        })
+    }
+
+    async handleClose(){
+        await this.setState({
+            modalAddEstabelecimentoShow:false,
+            modalUpdateEstabelecimentoShow:false,
+            deleteEstabelecimentoModal:false,
+            statusEstabelecimentoModal:false,
+        });
+        setTimeout(()=>{
+            this.atualizarTabela()
+        },1000)
+    }
+
+    //Getter e Setters do state
+    getModalInfo(){
+        let estabelecimentoProps = Object.assign({},this.state.modalInfo);
+        if(estabelecimentoProps.categoria !== undefined && estabelecimentoProps.categoria !== null)
+            estabelecimentoProps.categoria = estabelecimentoProps.categoria.categoria;
+        return estabelecimentoProps;
+    }
+    
+    setArrayEstabelecimentos(estabelecimentos){
+        this.setState({
+            estabelecimentos,
+        })
+    }
+    
+    setEstabelecimentoSelecionado(estabelecimento){
+        this.setState({
+            modalInfo:estabelecimento
+        })
+    }
+    
+    async getEstabelecimentosBackend(){
+        
+        const url = this.props.url + '/estabelecimento' + getFiltro(this.state.filter);
+        
+        const payload = {
+            method: 'GET'
+        };
+        
+        let response = await fetchForFitcardProjectBackend(url, payload)
+    
+        return response.json;
+    }
+
+    getCategoria(){
+        return this.state.categorias
+    }
+
+    setCategorias(categorias){
+        this.setState({
+            categorias,
+        })
+    }
+
+    setHabilitarDesabilitarBotaoDeStatus(desabilitado){
+        const btn = this.state.botaoAtivarDesativar;
+        this.setState({
+            botaoAtivarDesativar:{
+                ...btn,
+                desabilitado
+            }
+        })
+    }
+
+    setBotaoDeStatus(nomeBotaoAtivarDesativar){
+        const btn = this.state.botaoAtivarDesativar;
+        this.setState({
+            botaoAtivarDesativar:{
+                ...btn,
+                nomeBotaoAtivarDesativar
+            }
+        })
+    }
+
+    async getCategoriasFromBackend(){
+        
+        let url = this.props.url + '/categoria';
+        
+        let payload = {
+            method: 'GET'
+        };
+        
+        let response = await fetchForFitcardProjectBackend(url, payload)
+
+        if(response.code === 200){
+            this.setCategorias(response.json)
+        }
+
     }
 }
